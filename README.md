@@ -16,19 +16,11 @@ Note that this environment uses IDAM in AAT so a VPN is required.
 
 ## Set up
 
-When first creating the environment, log in to azure to access the container registry:
-
-```
-az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
-```
-
-Then run:
+The init script will clone the nfdiv repositories into sub-folders, start the CCD services and import the definition file. Then environment will then shut down and be ready for use.
 
 ```
 ./bin/init.sh
 ```
-
-This will clone the nfdiv repositories into sub-folders, start the CCD services and import the definition file. Then environment will then shut down and be ready for use.
 
 ## Usage
 
