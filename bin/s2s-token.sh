@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 MICROSERVICE="${1:-ccd_gw}"
-CURL_OPTS="${CURL_OPTS:--s -f}"
+CURL_OPTS="${CURL_OPTS:--s -f --retry 5}"
 
 token=$(curl $CURL_OPTS -X POST \
   -H "Content-Type: application/json" \

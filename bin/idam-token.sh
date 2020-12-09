@@ -1,12 +1,12 @@
 #!/bin/env bash
 
-IMPORTER_USERNAME=${1:-hmcts.fact@gmail.com}
+IMPORTER_USERNAME=${1:-nfdiv@hmcts.net}
 IMPORTER_PASSWORD=${2:-Pa55word11}
 IDAM_URI="https://idam-api.aat.platform.hmcts.net"
 REDIRECT_URI="http://localhost:3300/oauth2/callback"
 CLIENT_ID="fact_admin"
 CLIENT_SECRET="fact_admin_secret"
-CURL_OPTS=${CURL_OPTS:--s -f}
+CURL_OPTS=${CURL_OPTS:--s -f --retry 5}
 CURL="curl $CURL_OPTS"
 JQ="docker run --rm -i imega/jq"
 
