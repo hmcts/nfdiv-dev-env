@@ -66,7 +66,7 @@ services:
       DATA_STORE_DB_PASSWORD: "${DB_PASSWORD}"
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY:
-      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,nfdiv-cos,payment-api
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,nfdiv_cos,nfdiv_cms,payment-api
       CCD_DM_DOMAIN: http://dm-store-aat.service.core-compute-aat.internal
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
@@ -144,6 +144,55 @@ services:
       - ccd-elasticsearch
       - shared-database
 
+  nfdiv-cos:
+    build:
+      context: ./nfdiv-case-orchestration-service/
+    environment:
+      UK_GOV_NOTIFY_API_KEY: todo
+      SERVICE_AUTH_SECRET: "${COS_SERVICE_KEY}"
+      CASE_MAINTENANCE_SERVICE_API_BASEURL: http://nfdiv-cms:4010
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      PAYMENT_API_BASEURL: http://payment-api-aat.service.core-compute-aat.internal
+      PRD_API_BASEURL: http://rd-professional-api-aat.service.core-compute-aat.internal
+      SEND_LETTER_SERIVCE_BASEURL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
+      IDAM_API_REDIRECT_URL: todo
+      CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
+      SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs-aat.service.core-compute-aat.internal
+      FEES_AND_PAYMENTS_SERVICE_API_BASEURL: http://div-fps-aat.service.core-compute-aat.internal
+      DOCUMENT_MANAGEMENT_STORE_URL: http://dm-store-aat.service.core-compute-aat.internal
+      SERVICE_AUTH_MICROSERVICE: "nfdiv_cos"
+      SCHEDULER_RE_CREATE: "true"
+      FEATURE_DN_REFUSAL: "true"
+      FEATURE_RESP_SOLICITOR_DETAILS: "true"
+      DIV_SCHEDULER_DB_HOST: "shared-database"
+      DIV_SCHEDULER_DB_PORT: "5432"
+      DIV_SCHEDULER_DB_NAME: "div_scheduler"
+      DIV_SCHEDULER_DB_USER_NAME: "${DB_USERNAME}"
+      DIV_SCHEDULER_DB_PASSWORD: "${DB_PASSWORD}"
+      FLYWAY_URL: "jdbc:postgresql://shared-database:5432/div_scheduler"
+    ports:
+      - 4012:4012
+    depends_on:
+      - shared-database
+
+  nfdiv-cms:
+    build:
+      context: ./nfdiv-case-maintenance-service/
+    environment:
+      IDAM_API_BASEURL: https://idam-api.aat.platform.hmcts.net
+      AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DRAFT_STORE_API_BASEURL: http://draft-store-service-aat.service.core-compute-aat.internal
+      CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
+      CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
+      AUTH_PROVIDER_SERVICE_CLIENT_MICROSERVICE: "nfdiv_cms"
+      AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${CMS_SERVICE_KEY}"
+      LOG_LEVEL: DEBUG
+      DOCUMENTATION_SWAGGER_ENABLED: "true"
+    ports:
+      - 4010:4010
+    depends_on:
+      - ccd-data-store-api
 
 volumes:
   ccd-docker-azure-blob-data:
