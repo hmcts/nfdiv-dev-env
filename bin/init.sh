@@ -2,6 +2,9 @@
 
 ROOT_DIR="$(dirname "$0")/../"
 CCD_DEF_DIR=$ROOT_DIR/nfdiv-ccd-definitions
+COS_DIR=$ROOT_DIR/nfdiv-case-orchestration-service
+CMS_DIR=$ROOT_DIR/nfdiv-case-maintenance-service
+DFE_DIR=$ROOT_DIR/nfdiv-frontend
 
 SERVICE_TOKEN="$(${ROOT_DIR}/bin/s2s-token.sh)"
 USER_TOKEN="$(${ROOT_DIR}/bin/idam-token.sh)"
@@ -19,5 +22,13 @@ docker-compose up -d
 cd "$ROOT_DIR" || exit
 
 [[ -d $CCD_DEF_DIR ]] || git clone git@github.com:hmcts/nfdiv-ccd-definitions.git
+[[ -d $COS_DIR ]] || git clone git@github.com:hmcts/nfdiv-case-orchestration-service.git
+[[ -d $CMS_DIR ]] || git clone git@github.com:hmcts/nfdiv-case-maintenance-service.git
+[[ -d $DFE_DIR ]] || git clone git@github.com:hmcts/nfdiv-frontend.git
+
+cd $COS_DIR && ./gradlew assemble
+cd ../$CMS_DIR && ./gradlew assemble
+cd ../$DFE_DIR && yarn
+cd ../
 
 $ROOT_DIR./bin/ccd-import-definition.sh

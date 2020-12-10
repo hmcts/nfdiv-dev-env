@@ -12,9 +12,11 @@ The following packages are required:
  - azure-cli
  - postgres-client
 
-Note that this environment uses IDAM in AAT so a VPN is required. 
+Note that a VPN is required as this environment uses multiple services in the AAT environment. 
 
 ## Set up
+
+Before starting, ask a developer in the No Fault Divorce team for a `.env` file.
 
 The init script will clone the nfdiv repositories into sub-folders, start the CCD services and import the definition file. Then environment will then shut down and be ready for use.
 
