@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 MICROSERVICE="${1:-ccd_gw}"
 CURL_OPTS="${CURL_OPTS:--s -f --retry 5}"

@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 IMPORTER_USERNAME=${1:-nfdiv@hmcts.net}
 IMPORTER_PASSWORD=${2:-Pa55word11}

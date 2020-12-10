@@ -37,6 +37,6 @@ docker-compose up
 Import changes to the CCD definition file by running:
 
 ```
-./bin/import-ccd-definition.sh
+./bin/ccd-import-definition.sh
 ```
 

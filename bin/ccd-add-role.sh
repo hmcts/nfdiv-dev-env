@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 ## Usage: ./ccd-add-role.sh role [classification]
 ##
 ## Options:
