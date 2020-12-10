@@ -12,7 +12,7 @@ The following packages are required:
  - azure-cli
  - postgres-client
 
-Note that this environment uses IDAM in AAT so a VPN is required. 
+Note that a VPN is required as this environment uses multiple services in the AAT environment. 
 
 ## Set up
 

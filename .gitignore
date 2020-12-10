@@ -1,2 +1,6 @@
 .idea/
 nfdiv-ccd-definitions/
+nfdiv-case-maintenance-service/
+nfdiv-case-orchestration-service/
+nfdiv-frontend/
+.env
