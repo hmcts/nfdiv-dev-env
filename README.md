@@ -32,6 +32,22 @@ Please note that the Java APIs must be assembled with `./gradlew assemble` befor
 docker-compose up
 ```
 
+You can then log in to XUI going to `http://localhost:3000/`.
+
+The following accounts have been set up:
+
+- divorce_as_caseworker_beta@mailinator.com
+- divorce_as_caseworker_solicitor@mailinator.com
+- divorce_as_caseworker_bulk_scanner@mailinator.com
+- divorce_as_caseworker_bulkscan@mailinator.com
+- divorce_as_caseworker_superuser@mailinator.com
+- divorce_as_caseworker_la@mailinator.com
+- divorce_as_caseworker_admin@mailinator.com
+- divorce_respondent_solicitor@mailinator.com
+- TEST_SOLICITOR@mailinator.com
+
+The password for these accounts is `Testing1234`
+
 ### Updating the CCD definition file
 
 Import changes to the CCD definition file by running:
