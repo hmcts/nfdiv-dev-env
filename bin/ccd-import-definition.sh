@@ -28,6 +28,7 @@ $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-courtadmin-la
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-bulkscan
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-courtadmin
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-solicitor
+$ROOT_DIR./bin/ccd-add-role.sh caseworker-caa
 
 $CURL \
   $CCD_DEF_URL/import \
