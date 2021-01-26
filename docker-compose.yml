@@ -41,9 +41,9 @@ services:
       DEFINITION_STORE_DB_PASSWORD: "${DB_PASSWORD}"
       DEFINITION_STORE_DB_USE_SSL: "false"
       DEFINITION_STORE_IDAM_KEY:
-      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,nfdiv-cms,nfdiv-cos
+      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,nfdiv_cms,nfdiv_cos
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
-      IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+      IDAM_USER_URL: http://idam-api:5000
       IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       REFORM_SERVICE_NAME: ccd-definition-store-api
       ELASTIC_SEARCH_ENABLED: "true"
@@ -70,7 +70,7 @@ services:
       CCD_DM_DOMAIN: http://dm-store-aat.service.core-compute-aat.internal
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
-      IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+      IDAM_USER_URL: http://idam-api:5000
       IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       ELASTIC_SEARCH_ENABLED: "true"
       ELASTIC_SEARCH_HOSTS: ccd-elasticsearch:9200
@@ -218,7 +218,7 @@ services:
       SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api:4452
       SERVICES_IDAM_API_URL: http://idam-api:5000
       SERVICES_IDAM_CLIENT_ID: xuiwebapp
-      SERVICES_IDAM_LOGIN_URL: https://idam-web-public.aat.platform.hmcts.net
+      SERVICES_IDAM_LOGIN_URL: http://idam-web-public:3501
       SERVICES_IDAM_INDEX_URL: /
       SERVICES_IDAM_OAUTH_CALLBACK_URL: /oauth2/callback
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal

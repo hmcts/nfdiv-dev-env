@@ -19,14 +19,17 @@ AUTH_TOKEN=$(curl -s -H 'Content-Type: application/x-www-form-urlencoded' -XPOST
 HEADERS=(-H "Authorization: AdminApiAuthToken ${AUTH_TOKEN}" -H "Content-Type: application/json")
 
 # Create a client
-curl -v -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
+curl -s -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
  -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "'${CLIENT_ID}'", "label": "'${CLIENT_ID}'", "oauth2ClientId": "'${CLIENT_ID}'", "oauth2ClientSecret": "'${CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "string", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
 
 # Create roles in idam
 for role in "${ROLES_ARR[@]}"; do
-  curl -v -XPOST ${IDAM_URI}/roles "${HEADERS[@]}" \
+  curl -s -XPOST ${IDAM_URI}/roles "${HEADERS[@]}" \
     -d '{"id": "'${role}'","name": "'${role}'","description": "'${role}'","assignableRoles": [],"conflictingRoles": []}'
 done
 
 # Assign all the roles to the client
-curl -v -XPUT "${HEADERS[@]}" ${IDAM_URI}/services/${CLIENT_ID}/roles -d "${ROLES}"
+curl -s -XPUT "${HEADERS[@]}" ${IDAM_URI}/services/${CLIENT_ID}/roles -d "${ROLES}"
+
+./bin/idam-create-user.sh citizen,claimant $IDAM_CITIZEN_USERNAME $IDAM_CITIZEN_PASSWORD citizens
+./bin/idam-create-user.sh caseworker,caseworker-divorce $IDAM_CASEWORKER_USERNAME $IDAM_CASEWORKER_PASSWORD caseworker
