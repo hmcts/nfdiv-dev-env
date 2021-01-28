@@ -8,7 +8,7 @@ CURL="curl $CURL_OPTS"
 
 [[ -d $CCD_DEF_DIR ]] || (echo "No CCD definition directory, please run ./bin/init.sh" && exit)
 
-cd "$CCD_DEF_DIR" && yarn && yarn reset-ccd-submodule && yarn generate-excel-local;
+cd "$CCD_DEF_DIR" && yarn && yarn reset-ccd-submodule && yarn generate-excel-local && yarn generate-bulk-excel-local;
 cd ../
 
 echo "Importing CCD definition"
@@ -29,10 +29,18 @@ $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-bulkscan
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-courtadmin
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-solicitor
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-caa
+$ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce
 
+echo "Importing CCD divorce definition"
 $CURL \
   $CCD_DEF_URL/import \
   -H "Authorization: Bearer ${USER_TOKEN}" \
   -H "ServiceAuthorization: Bearer ${SERVICE_TOKEN}" \
   -F file="@$CCD_DEF_DIR/definitions/divorce/xlsx/ccd-config-local.xlsx"
 
+echo "Importing CCD bulk action definition"
+$CURL \
+  $CCD_DEF_URL/import \
+  -H "Authorization: Bearer ${USER_TOKEN}" \
+  -H "ServiceAuthorization: Bearer ${SERVICE_TOKEN}" \
+  -F file="@$CCD_DEF_DIR/definitions/bulk-action/xlsx/ccd-nfdiv-bulk-action-config-local.xlsx"

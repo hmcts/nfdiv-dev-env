@@ -7,7 +7,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler
+      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,draftstore
       DB_USERNAME:
       DB_PASSWORD:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -159,7 +159,7 @@ services:
       IDAM_API_REDIRECT_URL: https://div-pfe-aat.service.core-compute-aat.internal/authenticated
       PAYMENT_API_BASEURL: http://payment-api-aat.service.core-compute-aat.internal
       PRD_API_BASEURL: http://rd-professional-api-aat.service.core-compute-aat.internal
-      SEND_LETTER_SERIVCE_BASEURL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
+      SEND_LETTER_SERVICE_BASEURL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
       SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs-aat.service.core-compute-aat.internal
@@ -191,7 +191,7 @@ services:
       AUTH2_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
       DRAFT_STORE_API_ENCRYPTION_KEY_VALUE: "${DRAFT_STORE_API_KEY}"
       AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      DRAFT_STORE_API_BASEURL: http://draft-store-service-aat.service.core-compute-aat.internal
+      DRAFT_STORE_API_BASEURL: http://draft-store-api:8800
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
       CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
       AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${CMS_SERVICE_KEY}"
@@ -234,6 +234,27 @@ services:
     depends_on:
       - ccd-api-gateway
       - ccd-data-store-api
+
+  draft-store-api:
+    image: hmctspublic.azurecr.io/draft-store/service:${DRAFT_STORE_API_VERSION:-latest}
+    healthcheck:
+      retries: 40
+    environment:
+      - JAVA_OPTS=-Xms8m -Xmx256m -Djava.security.egd=file:/dev/./urandom -XX:MaxMetaspaceSize=128m
+      - DRAFT_STORE_DB_HOST=shared-database
+      - DRAFT_STORE_DB_USER_NAME=${DB_USERNAME}
+      - DRAFT_STORE_DB_PASSWORD=${DB_PASSWORD}
+      - IDAM_URL=http://idam-api:5000
+      - S2S_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      - ROOT_APPENDER
+      - JSON_CONSOLE_PRETTY_PRINT
+      - ROOT_LOGGING_LEVEL
+    mem_limit: 512m
+    memswap_limit: 0
+    depends_on:
+      - shared-database
+    ports:
+      - 8800:8800
 
 volumes:
   ccd-docker-azure-blob-data:
