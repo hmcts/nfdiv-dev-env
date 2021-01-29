@@ -38,6 +38,12 @@ Please note that the Java APIs must be assembled with `./gradlew assemble` befor
 
 You can then log in to XUI going to `http://localhost:3000/`.
 
+To stop docker containers execute below script. This will bring down all docker containers.
+
+```
+./bin/stop.sh
+```
+
 The following accounts have been set up:
 
 - divorce_as_caseworker_beta@mailinator.com
