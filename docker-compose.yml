@@ -75,7 +75,7 @@ services:
       ELASTIC_SEARCH_ENABLED: "true"
       ELASTIC_SEARCH_HOSTS: ccd-elasticsearch:9200
       ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
-      DATA_STORE_DEFAULT_LOG_LEVEL: INFO
+      DATA_STORE_DEFAULT_LOG_LEVEL: DEBUG
       APPINSIGHTS_INSTRUMENTATIONKEY: key
     ports:
       - 4452:4452
@@ -162,7 +162,7 @@ services:
       SEND_LETTER_SERVICE_BASEURL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
       SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs-aat.service.core-compute-aat.internal
+      DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs:4007
       FEES_AND_PAYMENTS_SERVICE_API_BASEURL: http://div-fps-aat.service.core-compute-aat.internal
       DOCUMENT_MANAGEMENT_STORE_URL: http://dm-store-aat.service.core-compute-aat.internal
       SERVICE_AUTH_SECRET: "${COS_SERVICE_KEY}"
@@ -255,6 +255,46 @@ services:
       - shared-database
     ports:
       - 8800:8800
+  div-dgs:
+    image: hmctspublic.azurecr.io/div/dgs:latest
+    healthcheck:
+      retries: 10
+    environment:
+      AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      EVIDENCE_MANAGEMENT_CLIENT_API_BASEURL: "http://div-emca:4006"
+      IDAM_S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      PDF_SERVICE_BASEURL: "http://cmc-pdf-service-aat.service.core-compute-aat.internal"
+      DOCMOSIS_SERVICE_BASE_URL: "https://docmosis-development.platform.hmcts.net"
+      REFORM_SERVICE_NAME: "dgs"
+      REFORM_TEAM: "div"
+      AUTH_PROVIDER_SERVICE_CLIENT_MICROSERVICE: "divorce_document_generator"
+      AUTH_PROVIDER_SERVICE_CLIENT_TOKENTIMETOLIVEINSECONDS: "900"
+      EVIDENCE_MANAGEMENT_CLIENT_API_HEALTH_ENDPOINT: "/health"
+      AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${AUTH_PROVIDER_SERVICE_CLIENT_KEY}"
+      DOCMOSIS_SERVICE_ACCESS_KEY: ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ
+    depends_on:
+      - div-emca
+    ports:
+    - 4007:4007
+
+  div-emca:
+    image: hmctspublic.azurecr.io/div/emca:latest
+    healthcheck:
+      retries: 10
+    environment:
+      AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      DOCUMENT_MANAGEMENT_STORE_URL: "http://dm-store-aat.service.core-compute-aat.internal"
+      EVIDENCE_MANAGEMENT_HEALTH_URL: "http://dm-store-aat.service.core-compute-aat.internal/health"
+      EVIDENCE_MANAGEMENT_UPLOAD_FILE_URL: "http://dm-store-aat.service.core-compute-aat.internal/documents"
+      AUTH_PROVIDER_SERVICE_CLIENT_MICROSERVICE: "divorce_document_generator"
+      IDAM_API_URL: "http://idam-api:5000"
+      AUTH_PROVIDER_SERVICE_CLIENT_TOKENTIMETOLIVEINSECONDS: "900"
+      HTTP_CONNECT_REQUEST_TIMEOUT: "60000"
+      HTTP_CONNECT_SOCKET_TIMEOUT: "5000"
+      HTTP_CONNECT_TIMEOUT: "60000"
+      AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${AUTH_PROVIDER_SERVICE_CLIENT_KEY}"
+    ports:
+    - 4006:4006
 
 volumes:
   ccd-docker-azure-blob-data:
