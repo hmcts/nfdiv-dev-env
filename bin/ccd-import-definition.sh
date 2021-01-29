@@ -11,6 +11,12 @@ CURL="curl $CURL_OPTS"
 cd "$CCD_DEF_DIR" && yarn && yarn reset-ccd-submodule && yarn generate-excel-local && yarn generate-bulk-excel-local;
 cd ../
 
+if [ -z "$SERVICE_TOKEN" ]
+then
+  SERVICE_TOKEN="$(${ROOT_DIR}/bin/s2s-token.sh)"
+  USER_TOKEN="$(${ROOT_DIR}/bin/idam-token.sh)"
+fi
+
 echo "Importing CCD definition"
 
 until $CURL $CCD_DEF_URL/health

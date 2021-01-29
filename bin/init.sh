@@ -5,6 +5,23 @@ CCD_DEF_DIR=$ROOT_DIR/nfdiv-ccd-definitions
 COS_DIR=$ROOT_DIR/nfdiv-case-orchestration-service
 CMS_DIR=$ROOT_DIR/nfdiv-case-maintenance-service
 DFE_DIR=$ROOT_DIR/nfdiv-frontend
+IDAM_URL=http://localhost:5000
+
+az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
+az acr login --name hmctsprivate --subscription 8999dec3-0104-4a27-94ee-6588559729d1
+
+docker-compose stop
+docker-compose pull
+docker-compose up -d idam-api fr-am fr-idm idam-web-public shared-db
+
+until curl -s $IDAM_URL/health
+do
+  echo "Waiting for IDAM";
+  sleep 10;
+done
+
+echo "Starting IDAM set up"
+$ROOT_DIR./bin/idam-setup.sh
 
 SERVICE_TOKEN="$(${ROOT_DIR}/bin/s2s-token.sh)"
 USER_TOKEN="$(${ROOT_DIR}/bin/idam-token.sh)"
@@ -27,9 +44,6 @@ cd ../$CMS_DIR && ./gradlew assemble
 cd ../$DFE_DIR && yarn
 cd ../
 
-az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
-az acr login --name hmctsprivate --subscription 8999dec3-0104-4a27-94ee-6588559729d1
-docker-compose stop
 docker-compose up --build -d
 
 $ROOT_DIR./bin/ccd-import-definition.sh
