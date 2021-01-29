@@ -19,11 +19,7 @@ fi
 
 echo "Importing CCD definition"
 
-until $CURL $CCD_DEF_URL/health
-do
-  echo "Waiting for CCD";
-  sleep 10;
-done
+$ROOT_DIR./bin/wait-for.sh "CCD" $CCD_DEF_URL
 
 $ROOT_DIR./bin/ccd-add-role.sh citizen
 $ROOT_DIR./bin/ccd-add-role.sh caseworker-divorce-courtadmin_beta

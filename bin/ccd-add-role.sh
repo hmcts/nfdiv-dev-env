@@ -9,7 +9,7 @@
 ## Add support for an IDAM role in CCD.
 
 CCD_DEF_URL=${CCD_DEF_URL:-http://localhost:4451}
-CURL_OPTS=${CURL_OPTS:--s -f}
+CURL_OPTS=${CURL_OPTS:--s -f -o /dev/null}
 CURL="curl $CURL_OPTS"
 
 role=$1

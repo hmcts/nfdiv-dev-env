@@ -33,7 +33,7 @@ The init script will clone the nfdiv repositories into sub-folders, start the CC
 Please note that the Java APIs must be assembled with `./gradlew assemble` before starting the environment.
 
 ```
-docker-compose up --build
+./bin/start.sh
 ```
 
 You can then log in to XUI going to `http://localhost:3000/`.
