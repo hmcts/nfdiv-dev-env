@@ -19,8 +19,6 @@ res=$($CURL -u "${IMPORTER_USERNAME}:${IMPORTER_PASSWORD}" -XPOST "${IDAM_URI}/o
 test "$?" != "0" && >&2 echo "No IDAM code: $res" && exit 1
 code=$(echo "$res" | $JQ -r .code)
 
-echo "$code"
-
 res=$($CURL -H "Content-Type: application/x-www-form-urlencoded" -u "${CLIENT_ID}:${CLIENT_SECRET}" -XPOST "${IDAM_URI}/oauth2/token?code=${code}&redirect_uri=${REDIRECT_URI}&grant_type=authorization_code" -d "")
 test "$?" != "0" && >&2 echo "No IDAM token: $res" && exit 1
 token=$(echo "$res" | $JQ -r .access_token)

@@ -25,6 +25,8 @@ fi
 
 IFS=',' read -ra roles <<< "$rolesStr"
 
+echo "Creating user $email"
+
 # Build roles JSON array
 rolesJson="["
 firstRole=true
