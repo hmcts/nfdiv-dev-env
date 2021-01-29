@@ -29,6 +29,8 @@ case $classification in
     exit 1 ;;
 esac
 
+echo "Creating CCD Role ${role}"
+
 $CURL -XPUT \
   $CCD_DEF_URL/api/user-role \
   -H "Authorization: Bearer ${USER_TOKEN}" \

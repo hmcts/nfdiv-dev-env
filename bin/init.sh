@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-ROOT_DIR="$(dirname "$0")/../"
-CCD_DEF_DIR=$ROOT_DIR/nfdiv-ccd-definitions
-COS_DIR=$ROOT_DIR/nfdiv-case-orchestration-service
-CMS_DIR=$ROOT_DIR/nfdiv-case-maintenance-service
-DFE_DIR=$ROOT_DIR/nfdiv-frontend
+CCD_DEF_DIR=./nfdiv-ccd-definitions
+COS_DIR=./nfdiv-case-orchestration-service
+CMS_DIR=./nfdiv-case-maintenance-service
+DFE_DIR=./nfdiv-frontend
 
 az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
 az acr login --name hmctsprivate --subscription 8999dec3-0104-4a27-94ee-6588559729d1
@@ -13,20 +12,17 @@ docker-compose stop
 docker-compose pull
 docker-compose up -d idam-api fr-am fr-idm idam-web-public shared-db
 
-$ROOT_DIR./bin/wait-for.sh "IDAM" http://localhost:5000
+./bin/wait-for.sh "IDAM" http://localhost:5000
 
 echo "Starting IDAM set up"
 
-$ROOT_DIR./bin/idam-setup.sh
+./bin/idam-setup.sh
 
-SERVICE_TOKEN="$(${ROOT_DIR}/bin/s2s-token.sh)"
-USER_TOKEN="$(${ROOT_DIR}/bin/idam-token.sh)"
+SERVICE_TOKEN="$(./bin/s2s-token.sh)"
+USER_TOKEN="$(./bin/idam-token.sh)"
 
 [ -z "$SERVICE_TOKEN" ] && >&2 echo "No service token" && exit
 [ -z "$USER_TOKEN" ] && >&2 echo "No user token" && exit
-
-export SERVICE_TOKEN
-export USER_TOKEN
 
 cd "$ROOT_DIR" || exit
 
@@ -42,4 +38,4 @@ cd ../
 
 docker-compose up --build -d
 
-$ROOT_DIR./bin/ccd-import-definition.sh
+./bin/ccd-import-definition.sh
