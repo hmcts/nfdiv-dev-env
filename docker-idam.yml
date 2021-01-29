@@ -27,6 +27,7 @@ services:
       IDAM_SPI_FORGEROCK_IDM_ROOT: http://fr-idm:18080/openidm
       IDAM_SPI_FORGEROCK_IDM_USERNAME: openidm-admin
       IDAM_SPI_FORGEROCK_IDM_PASSWORD: openidm-admin
+      IDAM_SPI_FORGEROCK_IDM_PIN_DEFAULTPASSWORD: BlaBlaBlackSh33p
       APPSETTING_NODE_PATH: es/
     ports:
       - 5000:5000
