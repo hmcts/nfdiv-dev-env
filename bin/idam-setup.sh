@@ -7,7 +7,7 @@ fi
 
 IDAM_URI="http://localhost:5000"
 
-REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated" "http://localhost:3501/oauth2/callback")
+REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated")
 REDIRECTS_STR=$(printf "\"%s\"," "${REDIRECTS[@]}")
 REDIRECT_URI="[${REDIRECTS_STR%?}]"
 
