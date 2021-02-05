@@ -6,34 +6,60 @@ then
 fi
 
 IDAM_URI="http://localhost:5000"
-REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated")
+
+REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated" "http://localhost:3501/oauth2/callback")
 REDIRECTS_STR=$(printf "\"%s\"," "${REDIRECTS[@]}")
 REDIRECT_URI="[${REDIRECTS_STR%?}]"
-CLIENT_ID="divorce"
-CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+
+DIV_CLIENT_ID="divorce"
+XUI_CLIENT_ID="xuiwebapp"
+
+DIV_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+XUI_CLIENT_SECRET=${XUI_OAUTH_SECRET}
+
 ROLES_ARR=("citizen" "claimant" "ccd-import" "caseworker-divorce" "caseworker" "caseworker-divorce-courtadmin_beta" "caseworker-divorce-systemupdate" "caseworker-divorce-superuser" "caseworker-divorce-pcqextractor" "caseworker-divorce-courtadmin-la" "caseworker-divorce-bulkscan" "caseworker-divorce-courtadmin" "caseworker-divorce-solicitor" "caseworker-caa" "payment")
 ROLES_STR=$(printf "\"%s\"," "${ROLES_ARR[@]}")
 ROLES="[${ROLES_STR%?}]"
 
+XUI_ROLES_ARR=("XUI-Admin" "XUI-SuperUser" "caseworker" "caseworker-divorce" "caseworker-divorce-courtadmin_beta" "caseworker-divorce-superuser" "caseworker-divorce-courtadmin-la" "caseworker-divorce-courtadmin" "caseworker-divorce-solicitor" "caseworker-caa" "payment")
+XUI_ROLES_STR=$(printf "\"%s\"," "${XUI_ROLES_ARR[@]}")
+XUI_ROLES="[${XUI_ROLES_STR%?}]"
+
 AUTH_TOKEN=$(curl -s -H 'Content-Type: application/x-www-form-urlencoded' -XPOST "${IDAM_URI}/loginUser?username=idamOwner@hmcts.net&password=Ref0rmIsFun" | docker run --rm --interactive stedolan/jq -r .api_auth_token)
 HEADERS=(-H "Authorization: AdminApiAuthToken ${AUTH_TOKEN}" -H "Content-Type: application/json")
 
-echo "Setup client"
+echo "Setup divorce client"
 # Create a client
 curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
- -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "'${CLIENT_ID}'", "label": "'${CLIENT_ID}'", "oauth2ClientId": "'${CLIENT_ID}'", "oauth2ClientSecret": "'${CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "openid profile roles", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
+ -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "'${DIV_CLIENT_ID}'", "label": "'${DIV_CLIENT_ID}'", "oauth2ClientId": "'${DIV_CLIENT_ID}'", "oauth2ClientSecret": "'${DIV_CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "openid profile roles", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
 
-echo "Setup roles"
+echo "Setup xui client"
+# Create a client
+curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
+ -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "'${XUI_CLIENT_ID}'", "label": "'${XUI_CLIENT_ID}'", "oauth2ClientId": "'${XUI_CLIENT_ID}'", "oauth2ClientSecret": "'${XUI_CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user create-user", "onboardingEndpoint": "string", "onboardingRoles": '"${XUI_ROLES}"', "selfRegistrationAllowed": true}'
 
+
+echo "Setup divorce roles"
 # Create roles in idam
 for role in "${ROLES_ARR[@]}"; do
   curl -s -o /dev/null -XPOST ${IDAM_URI}/roles "${HEADERS[@]}" \
     -d '{"id": "'${role}'","name": "'${role}'","description": "'${role}'","assignableRoles": [],"conflictingRoles": []}'
 done
 
-echo "Setup client roles"
+echo "Setup xui roles"
+# Create roles in idam
+for role in "${XUI_ROLES_ARR[@]}"; do
+  curl -s -o /dev/null -XPOST ${IDAM_URI}/roles "${HEADERS[@]}" \
+    -d '{"id": "'${role}'","name": "'${role}'","description": "'${role}'","assignableRoles": [],"conflictingRoles": []}'
+done
+
+echo "Setup divorce client roles"
 # Assign all the roles to the client
-curl -s -o /dev/null -XPUT "${HEADERS[@]}" ${IDAM_URI}/services/${CLIENT_ID}/roles -d "${ROLES}"
+curl -s -o /dev/null -XPUT "${HEADERS[@]}" ${IDAM_URI}/services/${DIV_CLIENT_ID}/roles -d "${ROLES}"
+
+echo "Setup xui client roles"
+# Assign all the roles to the client
+curl -s -o /dev/null -XPUT "${HEADERS[@]}" ${IDAM_URI}/services/${XUI_CLIENT_ID}/roles -d "${XUI_ROLES}"
 
 echo "Creating idam users"
 ./bin/idam-create-user.sh citizen,claimant $IDAM_CITIZEN_USERNAME $IDAM_CITIZEN_PASSWORD citizens
