@@ -7,7 +7,7 @@ fi
 
 IDAM_URI="http://localhost:5000"
 
-REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated")
+REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.core-compute-aat.internal/authenticated" "http://localhost:3000/oauth2/callback")
 REDIRECTS_STR=$(printf "\"%s\"," "${REDIRECTS[@]}")
 REDIRECT_URI="[${REDIRECTS_STR%?}]"
 
@@ -15,7 +15,7 @@ DIV_CLIENT_ID="divorce"
 XUI_CLIENT_ID="xuiwebapp"
 
 DIV_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
-XUI_CLIENT_SECRET=${XUI_OAUTH_SECRET}
+XUI_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
 
 ROLES_ARR=("citizen" "claimant" "ccd-import" "caseworker-divorce" "caseworker" "caseworker-divorce-courtadmin_beta" "caseworker-divorce-systemupdate" "caseworker-divorce-superuser" "caseworker-divorce-pcqextractor" "caseworker-divorce-courtadmin-la" "caseworker-divorce-bulkscan" "caseworker-divorce-courtadmin" "caseworker-divorce-solicitor" "caseworker-caa" "payment")
 ROLES_STR=$(printf "\"%s\"," "${ROLES_ARR[@]}")
@@ -36,7 +36,7 @@ curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
 echo "Setup xui client"
 # Create a client
 curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
- -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "'${XUI_CLIENT_ID}'", "label": "'${XUI_CLIENT_ID}'", "oauth2ClientId": "'${XUI_CLIENT_ID}'", "oauth2ClientSecret": "'${XUI_CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user create-user", "onboardingEndpoint": "string", "onboardingRoles": '"${XUI_ROLES}"', "selfRegistrationAllowed": true}'
+ -d '{ "activationRedirectUrl": "", "allowedRoles": '"${XUI_ROLES}"', "description": "'${XUI_CLIENT_ID}'", "label": "'${XUI_CLIENT_ID}'", "oauth2ClientId": "'${XUI_CLIENT_ID}'", "oauth2ClientSecret": "'${XUI_CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user create-user", "onboardingEndpoint": "string", "onboardingRoles": '"${XUI_ROLES}"', "selfRegistrationAllowed": true}'
 
 
 echo "Setup divorce roles"
