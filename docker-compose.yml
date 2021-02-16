@@ -150,12 +150,12 @@ services:
     build:
       context: ./nfdiv-case-orchestration-service/
     environment:
-      UK_GOV_NOTIFY_API_KEY:
-      IDAM_CITIZEN_USERNAME: "${IDAM_CITIZEN_USERNAME}"
-      IDAM_CITIZEN_PASSWORD: "${IDAM_CITIZEN_PASSWORD}"
-      IDAM_CASEWORKER_USERNAME: "${IDAM_TEST_CASEWORKER_USERNAME}"
-      IDAM_CASEWORKER_PASSWORD: "${IDAM_TEST_CASEWORKER_PASSWORD}"
-      IDAM_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
+      nfdiv.uk-gov-notify-api-key: "${UK_GOV_NOTIFY_API_KEY}"
+      nfdiv.idam-citizen-username: "${IDAM_CITIZEN_USERNAME}"
+      nfdiv.idam-citizen-password: "${IDAM_CITIZEN_PASSWORD}"
+      nfdiv.idam-caseworker-username: "${IDAM_CASEWORKER_USERNAME}"
+      nfdiv.idam-caseworker-password: "${IDAM_CASEWORKER_PASSWORD}"
+      nfdiv.idam-secret: "${OAUTH2_CLIENT_SECRET}"
       CASE_MAINTENANCE_SERVICE_API_BASEURL: http://nfdiv-cms:4010
       IDAM_API_URL: http://idam-api:5000
       IDAM_API_REDIRECT_URL: https://div-pfe-aat.service.core-compute-aat.internal/authenticated
@@ -167,7 +167,7 @@ services:
       DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs:4007
       FEES_AND_PAYMENTS_SERVICE_API_BASEURL: http://div-fps-aat.service.core-compute-aat.internal
       DOCUMENT_MANAGEMENT_STORE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      SERVICE_AUTH_SECRET: "${COS_S2S_SECRET}"
+      nfdiv.cos-service-key: "${COS_S2S_SECRET}"
       SCHEDULER_RE_CREATE: "true"
       SOLICITOR_DN_REJECT_AND_AMEND: "true"
       FEATURE_SHARE_A_CASE: "true"
@@ -178,7 +178,7 @@ services:
       DIV_SCHEDULER_DB_PORT: "5432"
       DIV_SCHEDULER_DB_NAME: "div_scheduler"
       DIV_SCHEDULER_DB_USER_NAME: "${DB_USERNAME}"
-      DIV_SCHEDULER_DB_PASSWORD: "${DB_PASSWORD}"
+      nfdiv.cos-postgresql-password: "${DB_PASSWORD}"
       FLYWAY_URL: "jdbc:postgresql://shared-database:5432/div_scheduler"
       DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
       DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
@@ -208,13 +208,13 @@ services:
     environment:
       IDAM_API_BASEURL: http://idam-api:5000
       IDAM_API_REDIRECT_URL: https://div-pfe-aat.service.core-compute-aat.internal/authenticated
-      IDAM_CASEWORKER_USERNAME:
-      IDAM_CASEWORKER_PASSWORD:
-      AUTH2_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
+      nfdiv.idam-caseworker-username: "${IDAM_CASEWORKER_USERNAME}"
+      nfdiv.idam-caseworker-password: "${IDAM_CASEWORKER_PASSWORD}"
+      nfdiv.idam-secret: "${OAUTH2_CLIENT_SECRET}"
       AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
       CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
-      AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${CMS_S2S_SECRET}"
+      nfdiv.cms-service-key: "${CMS_S2S_SECRET}"
       LOG_LEVEL: DEBUG
     ports:
       - 4010:4010
