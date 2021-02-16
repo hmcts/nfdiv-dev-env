@@ -14,6 +14,8 @@ The following packages are required:
 
 Note that a VPN is required as this environment uses multiple services in the AAT environment. 
 
+Also, you will need access to azure key vault. Please contact a member of No Fault Divorce team to gain access.
+
 ## Set up
 
 Before starting, download the latest .env file:
@@ -46,14 +48,9 @@ To stop docker containers execute below script. This will bring down all docker 
 
 The following accounts have been set up:
 
-- divorce_as_caseworker_beta@mailinator.com
-- divorce_as_caseworker_solicitor@mailinator.com
-- divorce_as_caseworker_bulk_scanner@mailinator.com
-- divorce_as_caseworker_bulkscan@mailinator.com
-- divorce_as_caseworker_superuser@mailinator.com
-- divorce_as_caseworker_la@mailinator.com
-- divorce_as_caseworker_admin@mailinator.com
-- divorce_respondent_solicitor@mailinator.com
+- TEST_CASE_WORKER_USER@mailinator.com
+- DivCitizenUser@AAT.com
+- DivCaseWorkerUser@AAT.com  
 - TEST_SOLICITOR@mailinator.com
 
 The password for these accounts is `Testing1234`

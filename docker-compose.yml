@@ -7,7 +7,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,draftstore
+      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,fees_register,payment
       DB_USERNAME:
       DB_PASSWORD:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -104,7 +104,7 @@ services:
       PROXY_DEFINITION_IMPORT: http://ccd-definition-store-api:4451
       PROXY_DEFINITION_DATA: http://ccd-definition-store-api:4451/api/data
       PROXY_DEFINITION_DISPLAY: http://ccd-definition-store-api:4451/api/display
-      PROXY_PAYMENTS: http://payment-api-aat.service.core-compute-aat.internal
+      PROXY_PAYMENTS: http://payments-api:8080
       APPINSIGHTS_INSTRUMENTATIONKEY: key
     ports:
       - 3453:3453
@@ -159,7 +159,7 @@ services:
       CASE_MAINTENANCE_SERVICE_API_BASEURL: http://nfdiv-cms:4010
       IDAM_API_URL: http://idam-api:5000
       IDAM_API_REDIRECT_URL: https://div-pfe-aat.service.core-compute-aat.internal/authenticated
-      PAYMENT_API_BASEURL: http://payment-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_BASEURL: http://payments-api:8080
       PRD_API_BASEURL: http://rd-professional-api-aat.service.core-compute-aat.internal
       SEND_LETTER_SERVICE_BASEURL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
@@ -167,8 +167,11 @@ services:
       DOCUMENT_GENERATOR_SERVICE_API_BASEURL: http://div-dgs:4007
       FEES_AND_PAYMENTS_SERVICE_API_BASEURL: http://div-fps-aat.service.core-compute-aat.internal
       DOCUMENT_MANAGEMENT_STORE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      nfdiv.cos-service-key: "${COS_SERVICE_KEY}"
+      nfdiv.cos-service-key: "${COS_S2S_SECRET}"
       SCHEDULER_RE_CREATE: "true"
+      SOLICITOR_DN_REJECT_AND_AMEND: "true"
+      FEATURE_SHARE_A_CASE: "true"
+      PAY_BY_ACCOUNT: "true"
       FEATURE_DN_REFUSAL: "true"
       FEATURE_RESP_SOLICITOR_DETAILS: "true"
       DIV_SCHEDULER_DB_HOST: "shared-database"
@@ -177,12 +180,27 @@ services:
       DIV_SCHEDULER_DB_USER_NAME: "${DB_USERNAME}"
       nfdiv.cos-postgresql-password: "${DB_PASSWORD}"
       FLYWAY_URL: "jdbc:postgresql://shared-database:5432/div_scheduler"
+      DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
+      DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
+      DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_HOST: smtp-server
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_TEST_CONNECTION: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: "*"
+      #Scheduler parameters
+      SCHEDULER_ENABLED: "false"
+      SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: "false"
+      SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
     ports:
       - 4012:4012
     depends_on:
       - shared-database
       - idam-api
       - div-dgs
+      - nfdiv-cms
+      - payments-api
+      - smtp-server
 
   nfdiv-cms:
     build:
@@ -193,18 +211,15 @@ services:
       nfdiv.idam-caseworker-username: "${IDAM_CASEWORKER_USERNAME}"
       nfdiv.idam-caseworker-password: "${IDAM_CASEWORKER_PASSWORD}"
       nfdiv.idam-secret: "${OAUTH2_CLIENT_SECRET}"
-      DRAFT_STORE_API_ENCRYPTION_KEY_VALUE: "${DRAFT_STORE_API_KEY}"
       AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      DRAFT_STORE_API_BASEURL: http://draft-store-api:8800
       CASE_FORMATTER_SERVICE_API_BASEURL: http://div-cfs-aat.service.core-compute-aat.internal
       CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
-      nfdiv.cms-service-key: "${CMS_SERVICE_KEY}"
+      nfdiv.cms-service-key: "${CMS_S2S_SECRET}"
       LOG_LEVEL: DEBUG
     ports:
       - 4010:4010
     depends_on:
       - ccd-data-store-api
-      - draft-store-api
       - idam-api
 
   xui-manage-cases:
@@ -218,13 +233,13 @@ services:
       PROTOCOL: http
       XUI_ENV: local
       SERVICES_DOCUMENTS_API: http://dm-store-aat.service.core-compute-aat.internal
-      SERVICES_PAYMENTS_URL: http://payment-api-aat.service.core-compute-aat.internal
+      SERVICES_PAYMENTS_URL: http://payments-api:8080
       SERVICES_EM_ANNO_API: http://ccd-api-gateway:3453
       SERVICES_CCD_COMPONENT_API: http://ccd-api-gateway:3453
       SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api:4452
       SERVICES_IDAM_API_URL: http://idam-api:5000
       SERVICES_IDAM_CLIENT_ID: xuiwebapp
-      SERVICES_IDAM_LOGIN_URL: http://idam-web-public:3501
+      SERVICES_IDAM_LOGIN_URL: http://localhost:3501
       SERVICES_IDAM_INDEX_URL: /
       SERVICES_IDAM_OAUTH_CALLBACK_URL: /oauth2/callback
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -232,7 +247,7 @@ services:
       HEALTH_CCD_COMPONENT_API: http://ccd-api-gateway:3453/health
       HEALTH_CCD_DATA_API: http://ccd-data-store-api:4452/health
       APPINSIGHTS_INSTRUMENTATIONKEY: TESTVAR
-      IDAM_SECRET: "${XUI_OAUTH_SECRET}"
+      IDAM_SECRET: "${OAUTH2_CLIENT_SECRET}"
       S2S_SECRET: "${XUI_SERVICE_KEY}"
       LAUNCH_DARKLY_CLIENT_ID: 1
     ports:
@@ -241,24 +256,6 @@ services:
       - ccd-api-gateway
       - ccd-data-store-api
       - idam-api
-
-  draft-store-api:
-    image: hmctspublic.azurecr.io/draft-store/service:${DRAFT_STORE_API_VERSION:-latest}
-    environment:
-      - JAVA_OPTS=-Xms8m -Xmx256m -Djava.security.egd=file:/dev/./urandom -XX:MaxMetaspaceSize=128m
-      - DRAFT_STORE_DB_HOST=shared-database
-      - DRAFT_STORE_DB_USER_NAME=${DB_USERNAME}
-      - DRAFT_STORE_DB_PASSWORD=${DB_PASSWORD}
-      - IDAM_URL=http://idam-api:5000
-      - S2S_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-    depends_on:
-      - shared-database
-      - idam-api
-    ports:
-      - 8800:8800
 
   div-dgs:
     image: hmctspublic.azurecr.io/div/dgs:latest
@@ -276,7 +273,7 @@ services:
       AUTH_PROVIDER_SERVICE_CLIENT_TOKENTIMETOLIVEINSECONDS: "900"
       EVIDENCE_MANAGEMENT_CLIENT_API_HEALTH_ENDPOINT: "/health"
       AUTH_PROVIDER_SERVICE_CLIENT_KEY: "${AUTH_PROVIDER_SERVICE_CLIENT_KEY}"
-      DOCMOSIS_SERVICE_ACCESS_KEY: ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ
+      DOCMOSIS_SERVICE_ACCESS_KEY: "${DOCMOSIS_SERVICE_ACCESS_KEY}"
     depends_on:
       - div-emca
     ports:
@@ -373,6 +370,109 @@ services:
       - idam-api
     depends_on:
       - idam-api
+
+  fees-api:
+    image: hmctspublic.azurecr.io/fees-register/api
+    environment:
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx256m
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://shared-database:5432/fees_register"
+      SPRING_DATASOURCE_USERNAME: "${DB_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD}"
+      AUTH_IDAM_CLIENT_BASEURL: "http://idam-api:5000"
+      APPINSIGHTS_INSTRUMENTATIONKEY: "key"
+      SPRING_LIQUIBASE_ENABLED: "true"
+      ENABLE_FEE_LOADER: "true"
+    ports:
+      - 4411:8080
+    depends_on:
+      - idam-api
+      - shared-database
+
+  payments-api:
+    container_name: payments-api
+    image: hmctspublic.azurecr.io/payment/api:latest
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx400m
+      - AUTH_PROVIDER_SERVICE_CLIENT_BASEURL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      - IDAM_S2S-AUTH_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      - AUTH_IDAM_CLIENT_BASEURL=http://idam-api:5000
+      - CARD_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - CARD_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - CARD_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - CARD_PAYMENTS_EMAIL_MESSAGE=hi
+      - CARD_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - BAR_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - BAR_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - BAR_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - BAR_PAYMENTS_EMAIL_MESSAGE=hi
+      - BAR_PAYMENTS_EMAIL_SUBJECT=Docker Env Bar Payments Reconciliation Report
+      - FEATURE_PAYMENTS_SEARCH=true
+      - FEES_REGISTER_URL=https://fees-api:8080
+      - GOV_PAY_AUTH_KEY_CMC=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
+      - GOV_PAY_AUTH_KEY_DIVORCE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
+      - GOV_PAY_AUTH_KEY_PROBATE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
+      - GOV_PAY_OPERATIONAL_SERVICES=ccd_gw
+      - GOV_PAY_URL=https://publicapi.payments.service.gov.uk/v1/payments
+      - payments.report.file.location=.
+      - PBA_CMC_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - PBA_CMC_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - PBA_CMC_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - PBA_CMC_PAYMENTS_EMAIL_MESSAGE=hi
+      - PBA_CMC_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - PBA_PROBATE_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - PBA_PROBATE_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - PBA_PROBATE_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - PBA_PROBATE_PAYMENTS_EMAIL_MESSAGE=hi
+      - PBA_PROBATE_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - PBA_FINREM_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - PBA_FINREM_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - PBA_FINREM_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - PBA_FINREM_PAYMENTS_EMAIL_MESSAGE=hi
+      - PBA_FINREM_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - PBA_DIVORCE_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - PBA_DIVORCE_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - PBA_DIVORCE_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - PBA_DIVORCE_PAYMENTS_EMAIL_MESSAGE=hi
+      - PBA_DIVORCE_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - PBA_FPL_PAYMENTS_REPORT_SCHEDULER_ENABLED=true
+      - PBA_FPL_PAYMENTS_EMAIL_FROM=no-reply@reform.hmcts.net
+      - PBA_FPL_PAYMENTS_EMAIL_TO=pepito@grillo.com
+      - PBA_FPL_PAYMENTS_EMAIL_MESSAGE=hi
+      - PBA_FPL_PAYMENTS_EMAIL_SUBJECT=Docker Env Card Payments Reconciliation Report
+      - REFORM_ENVIRONMENT=aat
+      - REFORM_SERVICE_NAME=payment-api
+      - REFORM_TEAM=cc
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://shared-database:5432/payment
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_LIQUIBASE_ENABLED=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST=*
+      - SPRING_MAIL_PORT=25
+      - SPRING_MAIL_HOST=smtp-server
+      - TRUSTED_S2S_SERVICE_NAMES=cmc,probate_frontend,divorce_frontend,ccd_gw,bar_api,api_gw,finrem_payment_service,ccpay_bubble,jui_webapp,xui_webapp,fpl_case_service,iac,nfdiv_cos,nfdiv_cms
+      - PAYBUBBLE_HOME_URL=https://ccpay-bubble-frontend-aat.service.core-compute-aat.internal
+      - PCI_PAL_CALLBACK_URL=https://core-api-mgmt-aat.azure-api.net/telephony-api/telephony/callback
+      - ASB_CONNECTION_STRING=some-azure-service-bus-connection-string
+      - APPINSIGHTS_INSTRUMENTATIONKEY=DUMMY
+      - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
+      - PAYMENT_S2S_SECRET=${PAYMENT_S2S_SECRET}
+      - http_proxy
+      - https_proxy
+      - no_proxy
+    ports:
+      - 4401:8080
+    depends_on:
+      - shared-database
+      - idam-api
+      - ccd-data-store-api
+
+  smtp-server:
+    image: mailhog/mailhog
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
 
   shared-db:
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
