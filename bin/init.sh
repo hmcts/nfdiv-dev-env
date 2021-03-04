@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-CCD_DEF_DIR=./nfdiv-ccd-definitions
-COS_DIR=./nfdiv-case-orchestration-service
-CMS_DIR=./nfdiv-case-maintenance-service
-DFE_DIR=./nfdiv-frontend
+if [ -f .env ]
+then
+  export $(cat .env | sed 's/#.*//g' | xargs)
+fi
+
+API_DIR=./nfdiv-case-api
+FE_DIR=./nfdiv-frontend
 
 az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
 az acr login --name hmctsprivate --subscription 8999dec3-0104-4a27-94ee-6588559729d1
 
-[[ -d $CCD_DEF_DIR ]] || git clone git@github.com:hmcts/nfdiv-ccd-definitions.git
-[[ -d $COS_DIR ]] || git clone git@github.com:hmcts/nfdiv-case-orchestration-service.git
-[[ -d $CMS_DIR ]] || git clone git@github.com:hmcts/nfdiv-case-maintenance-service.git
-[[ -d $DFE_DIR ]] || git clone git@github.com:hmcts/nfdiv-frontend.git
-
+[[ -d $API_DIR ]] || git clone git@github.com:hmcts/nfdiv-case-api.git
+[[ -d $FE_DIR ]] || git clone git@github.com:hmcts/nfdiv-frontend.git
 
 docker-compose stop
 docker-compose pull
@@ -24,17 +24,14 @@ echo "Starting IDAM set up"
 
 ./bin/idam-setup.sh
 
-SERVICE_TOKEN="$(./bin/s2s-token.sh)"
-USER_TOKEN="$(./bin/idam-token.sh)"
-
-[ -z "$SERVICE_TOKEN" ] && >&2 echo "No service token" && exit
-[ -z "$USER_TOKEN" ] && >&2 echo "No user token" && exit
-
-cd $COS_DIR && (./gradlew assemble -q > /dev/null 2>&1)
-cd ../$CMS_DIR && (./gradlew assemble -q > /dev/null 2>&1)
-cd ../$DFE_DIR && (yarn > /dev/null 2>&1)
-cd ../
-
 docker-compose up --build -d
 
-./bin/ccd-import-definition.sh
+cd $API_DIR && (./gradlew assemble -q > /dev/null 2>&1)
+./gradlew -q generateCCDConfig
+../bin/wait-for.sh "CCD definition store" http://localhost:4451
+
+./bin/add-roles.sh
+./bin/process-and-import-ccd-definition.sh
+cd ../$FE_DIR && (yarn > /dev/null 2>&1)
+cd ../
+
