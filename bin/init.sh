@@ -7,7 +7,6 @@ fi
 
 API_DIR=./nfdiv-case-api
 FE_DIR=./nfdiv-frontend
-export SERVICE_AUTH_PROVIDER_API_BASE_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 az acr login --name hmctspublic --subscription 8999dec3-0104-4a27-94ee-6588559729d1
 az acr login --name hmctsprivate --subscription 8999dec3-0104-4a27-94ee-6588559729d1
@@ -25,16 +24,14 @@ echo "Starting IDAM set up"
 
 ./bin/idam-setup.sh
 
-SERVICE_TOKEN="$(./bin/s2s-token.sh)"
-USER_TOKEN="$(./bin/idam-token.sh)"
-
-[ -z "$SERVICE_TOKEN" ] && >&2 echo "No service token" && exit
-[ -z "$USER_TOKEN" ] && >&2 echo "No user token" && exit
+docker-compose up --build -d
 
 cd $API_DIR && (./gradlew assemble -q > /dev/null 2>&1)
+./gradlew -q generateCCDConfig
+../bin/wait-for.sh "CCD definition store" http://localhost:4451
+
+./bin/add-roles.sh
+./bin/process-and-import-ccd-definition.sh
 cd ../$FE_DIR && (yarn > /dev/null 2>&1)
 cd ../
 
-docker-compose up --build -d
-
-./bin/ccd-import-definition.sh
