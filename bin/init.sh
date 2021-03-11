@@ -31,6 +31,7 @@ cd $API_DIR && (./gradlew assemble -q > /dev/null 2>&1)
 ../bin/wait-for.sh "CCD definition store" http://localhost:4451
 
 ./bin/add-roles.sh
+./bin/add-ccd-user-profiles.sh
 ./bin/process-and-import-ccd-definition.sh
 cd ../$FE_DIR && (yarn > /dev/null 2>&1)
 cd ../

@@ -53,7 +53,7 @@ The following accounts have been set up:
 - DivCaseWorkerUser@AAT.com  
 - TEST_SOLICITOR@mailinator.com
 
-The password for these accounts is `Testing1234`
+The password for these accounts is in your .env file.
 
 ### Updating the CCD definition file
 
