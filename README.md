@@ -19,10 +19,12 @@ Also, you will need access to azure key vault. Please contact a member of No Fau
 
 ## Set up
 
-If you're running on macOS install `coreutils` and `azure-cli` via:
+If you're running on macOS install the following via brew:
 
 ```bash
-brew install coreutils azure-cli
+brew install coreutils azure-cli libpq
+brew link --force libpq
+brew install --cask docker
 ```
 
 Make sure that Docker has been given at least **9GB** of RAM.
