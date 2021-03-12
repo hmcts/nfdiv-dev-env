@@ -24,9 +24,14 @@ echo "Starting IDAM set up"
 
 ./bin/idam-setup.sh
 
+cd $API_DIR && (./gradlew assemble -q > /dev/null 2>&1)
+
+cd ../
+
 docker-compose up --build -d
 
-cd $API_DIR && (./gradlew assemble -q > /dev/null 2>&1)
+cd $API_DIR
+
 ./gradlew -q generateCCDConfig
 ../bin/wait-for.sh "CCD definition store" http://localhost:4451
 
