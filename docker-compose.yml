@@ -271,6 +271,15 @@ services:
       - idam-api
       - shared-database
 
+  nfdiv-case-api:
+    build:
+      context: ./nfdiv-case-api/
+    environment:
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      UK_GOV_NOTIY_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
+    ports:
+      - 4013:4013
+
   payments-api:
     container_name: payments-api
     image: hmctspublic.azurecr.io/payment/api:latest
