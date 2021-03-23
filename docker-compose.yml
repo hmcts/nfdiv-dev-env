@@ -7,7 +7,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,fees_register,payment
+      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,payment
       DB_USERNAME:
       DB_PASSWORD:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -254,29 +254,13 @@ services:
     depends_on:
       - idam-api
 
-  fees-api:
-    image: hmctspublic.azurecr.io/fees-register/api
-    environment:
-      JAVA_TOOL_OPTIONS: -Xms128m -Xmx256m
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://shared-database:5432/fees_register"
-      SPRING_DATASOURCE_USERNAME: "${DB_USERNAME}"
-      SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD}"
-      AUTH_IDAM_CLIENT_BASEURL: "http://idam-api:5000"
-      APPINSIGHTS_INSTRUMENTATIONKEY: "key"
-      SPRING_LIQUIBASE_ENABLED: "true"
-      ENABLE_FEE_LOADER: "true"
-    ports:
-      - 4411:8080
-    depends_on:
-      - idam-api
-      - shared-database
-
   nfdiv-case-api:
     build:
       context: ./nfdiv-case-api/
     environment:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       UK_GOV_NOTIY_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
+      FEE_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
     ports:
       - 4013:4013
 
@@ -299,7 +283,7 @@ services:
       - BAR_PAYMENTS_EMAIL_MESSAGE=hi
       - BAR_PAYMENTS_EMAIL_SUBJECT=Docker Env Bar Payments Reconciliation Report
       - FEATURE_PAYMENTS_SEARCH=true
-      - FEES_REGISTER_URL=https://fees-api:8080
+      - FEES_REGISTER_URL=http://fees-register-api-aat.service.core-compute-aat.internal
       - GOV_PAY_AUTH_KEY_CMC=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
       - GOV_PAY_AUTH_KEY_DIVORCE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
       - GOV_PAY_AUTH_KEY_PROBATE_FRONTEND=la0ohpqa9er1bub2hddieeesc6sabbbqn4smkkve7s9ailn3n9d3hbnhc3
