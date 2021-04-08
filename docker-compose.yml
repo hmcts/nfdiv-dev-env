@@ -261,6 +261,7 @@ services:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       UK_GOV_NOTIY_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
       FEE_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
     ports:
       - 4013:4013
 
