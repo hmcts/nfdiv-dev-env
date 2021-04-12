@@ -172,6 +172,7 @@ services:
       REDISCLOUD_URL: http://localhost:6780
       HEALTH_CCD_COMPONENT_API: http://ccd-api-gateway:3453/health
       HEALTH_CCD_DATA_API: http://ccd-data-store-api:4452/health
+      SERVICES_PRD_API: http://mock-rd-professional-api:8080
       APPINSIGHTS_INSTRUMENTATIONKEY: TESTVAR
       IDAM_SECRET: "${OAUTH2_CLIENT_SECRET}"
       S2S_SECRET: "${XUI_SERVICE_KEY}"
@@ -182,6 +183,13 @@ services:
       - ccd-api-gateway
       - ccd-data-store-api
       - idam-api
+
+  mock-rd-professional-api:
+    image: rodolpheche/wiremock
+    volumes:
+      - ./mocks:/home/wiremock:rw
+    ports:
+      - 8765:8080
 
   idam-api:
     image: "hmctspublic.azurecr.io/idam/api:stable"
@@ -266,7 +274,6 @@ services:
       - 4013:4013
 
   payments-api:
-    container_name: payments-api
     image: hmctspublic.azurecr.io/payment/api:latest
     environment:
       - JAVA_TOOL_OPTIONS=-Xms128m -Xmx400m
