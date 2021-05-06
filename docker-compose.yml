@@ -66,7 +66,7 @@ services:
       DATA_STORE_DB_PASSWORD: "${DB_PASSWORD}"
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY:
-      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api
       CCD_DM_DOMAIN: http://dm-store:8080
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
@@ -267,10 +267,17 @@ services:
       context: ./nfdiv-case-api/
     environment:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      UK_GOV_NOTIY_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
+      S2S_SECRET: "${S2S_SECRET}"
+      UK_GOV_NOTIFY_API_KEY: "${UK_GOV_NOTIFY_API_KEY}"
       FEE_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       DOC_ASSEMBLY_URL: http://doc-assembly-api:8080
-      S2S_SECRET: ${S2S_SECRET}
+      DOCUMENT_MANAGEMENT_URL: http://dm-store:8080
+      IDAM_API_BASEURL: http://idam-api:5000
+      IDAM_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
+      IDAM_CASEWORKER_USERNAME: "${IDAM_TEST_CASEWORKER_USERNAME}"
+      IDAM_CASEWORKER_PASSWORD: "${IDAM_TEST_CASEWORKER_PASSWORD}"
+      CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
+
     ports:
       - 4013:4013
 
