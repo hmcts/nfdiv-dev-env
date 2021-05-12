@@ -263,6 +263,7 @@ services:
       - idam-api
 
   nfdiv-case-api:
+    container_name: nfdiv-case-api
     build:
       context: ./nfdiv-case-api/
     environment:
@@ -277,7 +278,7 @@ services:
       IDAM_CASEWORKER_USERNAME: "${IDAM_TEST_CASEWORKER_USERNAME}"
       IDAM_CASEWORKER_PASSWORD: "${IDAM_TEST_CASEWORKER_PASSWORD}"
       CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
-
+      PRD_API_BASEURL: http://mock-rd-professional-api:8080
     ports:
       - 4013:4013
 
