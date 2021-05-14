@@ -299,8 +299,6 @@ services:
       - DOCMOSIS_TEMPLATES_ENDPOINT= https://docmosis.aat.platform.hmcts.net
       - DOCMOSIS_CONVERT_ENDPOINT= https://docmosis.aat.platform.hmcts.net/rs/convert
       - DOCMOSIS_RENDER_ENDPOINT= https://docmosis.aat.platform.hmcts.net/rs/render
-    mem_limit: 256m
-    memswap_limit: 0
     depends_on:
       - dm-store
 
