@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+az keyvault secret show --vault-name nfdiv-aat -o tsv --query value --name nfdiv-local-env-config | base64 -d > .env
+
 if [ -f .env ]
 then
   export $(cat .env | sed 's/#.*//g' | xargs)

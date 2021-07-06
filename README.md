@@ -29,12 +29,6 @@ brew install --cask docker
 
 Make sure that Docker has been given at least **9GB** of RAM.
 
-Before starting, download the latest .env file:
-
-```bash
-az keyvault secret show --vault-name nfdiv-aat -o tsv --query value --name nfdiv-local-env-config | base64 -d > .env
-```
-
 The init script will clone the nfdiv repositories into sub-folders, start the CCD services and import the definition file. Then environment will then shut down and be ready for use.
 
 ```bash

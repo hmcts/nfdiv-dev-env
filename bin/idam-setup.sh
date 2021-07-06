@@ -66,5 +66,5 @@ echo "Creating idam users"
 ./bin/idam-create-user.sh caseworker,caseworker-divorce,caseworker-divorce-courtadmin_beta,caseworker-divorce-systemupdate,caseworker-divorce-courtadmin,caseworker-divorce-bulkscan,caseworker-divorce-superuser,caseworker-divorce-courtadmin-la $IDAM_CASEWORKER_USERNAME $IDAM_CASEWORKER_PASSWORD caseworker
 ./bin/idam-create-user.sh caseworker,caseworker-divorce,caseworker-divorce-courtadmin_beta $IDAM_TEST_CASEWORKER_USERNAME $IDAM_TEST_CASEWORKER_PASSWORD caseworker
 ./bin/idam-create-user.sh caseworker,caseworker-divorce,caseworker-divorce-solicitor,caseworker-divorce-superuser $IDAM_TEST_SOLICITOR_USERNAME $IDAM_TEST_SOLICITOR_PASSWORD caseworker
-./bin/idam-create-user.sh ccd-import $CCD_DEFINITION_IMPORTER_USERNAME $CCD_DEFINITION_IMPORTER_PASSWORD Default
+./bin/idam-create-user.sh ccd-import $DEFINITION_IMPORTER_USERNAME $DEFINITION_IMPORTER_PASSWORD Default
 echo "Idam setup complete"
