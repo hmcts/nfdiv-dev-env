@@ -77,7 +77,6 @@ services:
       ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
       DATA_STORE_DEFAULT_LOG_LEVEL: INFO
       APPINSIGHTS_INSTRUMENTATIONKEY: key
-      LOG_CALLBACK_DETAILS: /caseworker-create-general-order
     ports:
       - 4452:4452
       - 5005:5005
