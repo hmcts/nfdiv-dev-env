@@ -77,6 +77,7 @@ services:
       ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
       DATA_STORE_DEFAULT_LOG_LEVEL: INFO
       APPINSIGHTS_INSTRUMENTATIONKEY: key
+      LOG_CALLBACK_DETAILS: /caseworker-create-general-order
     ports:
       - 4452:4452
       - 5005:5005
@@ -279,6 +280,8 @@ services:
       IDAM_CASEWORKER_PASSWORD: "${IDAM_TEST_CASEWORKER_PASSWORD}"
       CASE_DATA_STORE_BASEURL: http://ccd-data-store-api:4452
       PRD_API_BASEURL: http://mock-rd-professional-api:8080
+      IDAM_SYSTEM_UPDATE_USERNAME: "${IDAM_SYSTEM_UPDATE_USERNAME}"
+      IDAM_SYSTEM_UPDATE_PASSWORD: "${IDAM_SYSTEM_UPDATE_PASSWORD}"
     ports:
       - 4013:4013
 
