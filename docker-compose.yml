@@ -77,6 +77,8 @@ services:
       ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
       DATA_STORE_DEFAULT_LOG_LEVEL: INFO
       APPINSIGHTS_INSTRUMENTATIONKEY: key
+      IDAM_API_BASE_URL: http://idam-api:5000
+      IDAM_OIDC_URL: http://idam-web-public:8080
     ports:
       - 4452:4452
       - 5005:5005
