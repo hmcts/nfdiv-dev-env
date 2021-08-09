@@ -66,7 +66,7 @@ services:
       DATA_STORE_DB_PASSWORD: "${DB_PASSWORD}"
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY:
-      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api,ccd_case_document_am_api
       CCD_DM_DOMAIN: http://dm-store:8080
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
@@ -79,6 +79,11 @@ services:
       APPINSIGHTS_INSTRUMENTATIONKEY: key
       IDAM_API_BASE_URL: http://idam-api:5000
       IDAM_OIDC_URL: http://idam-web-public:8080
+      IDAM_DATA_STORE_SYSTEM_USER_USERNAME: "${CCD_SYSTEM_UPDATE_USERNAME}"
+      IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: "${CCD_SYSTEM_UPDATE_PASSWORD}"
+      IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
+      IDAM_CLIENT_ID: ccd_data_store_api
+      CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
     ports:
       - 4452:4452
       - 5005:5005
@@ -87,6 +92,31 @@ services:
       - ccd-user-profile-api
       - ccd-definition-store-api
       - idam-api
+
+  ccd-case-document-am-api:
+    image: "${CCD_CASE_DOCUMENT_AM_API_USE_LOCAL-hmctspublic.azurecr.io/}ccd/case-document-am-api:${CCD_CASE_DOCUMENT_AM_API_TAG:-latest}"
+    environment:
+      CASE_DOCUMENT_AM_API_S2S_SECRET: "${IDAM_KEY_CASE_DOCUMENT}"
+      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor
+      IDAM_API_URL: http://idam-api:5000
+      IDAM_OIDC_URL: http://idam-api:5000
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_BASE_URL: http://dm-store:8080
+      CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api:4452
+      REFORM_SERVICE_NAME: ccd-case-document-am-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      DOCUMENT_TTL: 3600000
+      # Uncomment this line to enable JVM debugging and uncomment the port mapping below
+      # JAVA_TOOL_OPTIONS: '-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -XX:+UseConcMarkSweepGC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    ports:
+      - 4455:4455
+      # Uncomment this and the JAVA_TOOL_OPTIONS flag for JVM debugging
+      # 5005:5005
+    depends_on:
+      - ccd-data-store-api
+      - dm-store
 
   ccd-api-gateway:
     image: hmctspublic.azurecr.io/ccd/api-gateway-web:latest
@@ -227,6 +257,15 @@ services:
       - fr-idm
       - shared-db
 
+  idam-web-admin:
+    image: hmctspublic.azurecr.io/idam/web-admin:stable
+    ports:
+      - 8082:8080
+    environment:
+      - JAVA_OPTS=-Xms128m -Xms512m
+      - STRATEGIC_SERVICE_URL=http://idam-api:5000
+      - STRATEGIC_PUBLIC_URL=http://idam-web-public:8080
+
   fr-am:
     image: "hmctsprivate.azurecr.io/idam/idam-fr-am:latest"
     environment:
@@ -322,7 +361,7 @@ services:
       IDAM_TESTING_SUPPORT_ENABLED: "true"
       IDAM_USER_BASE_URI: http://idam-api:5000
       IDAM_S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      S2S_NAMES_WHITELIST: sscs,divorce,ccd,em_gw,document-management-store,ccd_gw,idam-api,fpl_case_service,xui_webapp,ccd_case_document_am_api,nfdiv_case_api,dg_docassembly_api
+      S2S_NAMES_WHITELIST: sscs,divorce,ccd,em_gw,document-management-store,ccd_gw,idam-api,fpl_case_service,xui_webapp,ccd_case_document_am_api,nfdiv_case_api,dg_docassembly_api,ccd_case_document_am_api
       ENABLE_DB_MIGRATE: "true"
 
     depends_on:
