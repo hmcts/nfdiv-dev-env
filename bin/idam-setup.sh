@@ -11,6 +11,10 @@ REDIRECTS=("http://localhost:3001/oauth2/callback" "https://div-pfe-aat.service.
 REDIRECTS_STR=$(printf "\"%s\"," "${REDIRECTS[@]}")
 REDIRECT_URI="[${REDIRECTS_STR%?}]"
 
+CCD_REDIRECTS=("http://ccd-data-store-api/oauth2redirect")
+CCD_REDIRECTS_STR=$(printf "\"%s\"," "${CCD_REDIRECTS[@]}")
+CCD_REDIRECT_URI="[${CCD_REDIRECTS_STR%?}]"
+
 DIV_CLIENT_ID="divorce"
 XUI_CLIENT_ID="xuiwebapp"
 
@@ -38,6 +42,9 @@ echo "Setup xui client"
 curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
  -d '{ "activationRedirectUrl": "", "allowedRoles": '"${XUI_ROLES}"', "description": "'${XUI_CLIENT_ID}'", "label": "'${XUI_CLIENT_ID}'", "oauth2ClientId": "'${XUI_CLIENT_ID}'", "oauth2ClientSecret": "'${XUI_CLIENT_SECRET}'", "oauth2RedirectUris": '${REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user create-user", "onboardingEndpoint": "string", "onboardingRoles": '"${XUI_ROLES}"', "selfRegistrationAllowed": true}'
 
+echo "Setup ccd data store client"
+curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
+ -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "ccd_data_store_api", "label": "ccd_data_store_api", "oauth2ClientId": "ccd_data_store_api", "oauth2ClientSecret": "'${OAUTH2_CLIENT_SECRET}'", "oauth2RedirectUris": '${CCD_REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
 
 echo "Setup divorce roles"
 # Create roles in idam
@@ -68,4 +75,5 @@ echo "Creating idam users"
 ./bin/idam-create-user.sh caseworker,caseworker-divorce,caseworker-divorce-solicitor,caseworker-divorce-superuser $IDAM_TEST_SOLICITOR_USERNAME $IDAM_TEST_SOLICITOR_PASSWORD caseworker
 ./bin/idam-create-user.sh ccd-import $DEFINITION_IMPORTER_USERNAME $DEFINITION_IMPORTER_PASSWORD Default
 ./bin/idam-create-user.sh caseworker,caseworker-divorce,caseworker-divorce-systemupdate $IDAM_SYSTEM_UPDATE_USERNAME $IDAM_SYSTEM_UPDATE_PASSWORD caseworker
+./bin/idam-create-user.sh caseworker $CCD_SYSTEM_UPDATE_USERNAME $CCD_SYSTEM_UPDATE_PASSWORD caseworker
 echo "Idam setup complete"
