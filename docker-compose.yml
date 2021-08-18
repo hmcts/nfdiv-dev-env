@@ -459,6 +459,46 @@ services:
       - idam-api
       - ccd-data-store-api
 
+  pcq-backend:
+    image: hmctspublic.azurecr.io/pcq/backend
+    environment:
+      # database configuration
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://pcq-database:5432/${PCQ_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${PCQ_DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${PCQ_DB_PASSWORD}
+      # JWT configuration
+      - JWT_SECRET=${JWT_SECRET}
+      # PGP Encryption configuration
+      - DB_ENCRYPTION_KEY=${DB_ENCRYPTION_KEY}
+      - S2S_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    ports:
+      - 4550:4550
+    depends_on:
+      - pcq-database
+
+  pcq-database:
+    container_name: pcq-database
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: ${PCQ_DB_USERNAME}
+      POSTGRES_PASSWORD: ${PCQ_DB_PASSWORD}
+      POSTGRES_DB: ${PCQ_DB_NAME}
+    ports:
+      - 5052:5432
+    volumes:
+      - pcq-database-data:/var/lib/postgresql/data
+
+  pcq-frontend:
+    image: hmctspublic.azurecr.io/pcq/frontend
+    environment:
+      - LAUNCHDARKLY_KEY=sdk-e97f48f2-0492-43fe-b881-12695a051846
+      - PCQ_BACKEND_ENABLED=true
+      - PCQ_BACKEND_URL=http://pcq-backend:4550
+    ports:
+      - 4000:4000
+    depends_on:
+      - pcq-backend
+
   smtp-server:
     image: mailhog/mailhog
     restart: always
@@ -473,6 +513,7 @@ services:
 
 volumes:
   ccd-docker-azure-blob-data:
+  pcq-database-data:
   esdata1:
     driver: local
 
