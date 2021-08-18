@@ -12,6 +12,8 @@ The following packages are required:
 - docker-compose
 - azure-cli
 - postgres-client
+- node.js and yarn
+- java 11
 
 Note that a VPN is required as this environment uses multiple services in the AAT environment.
 
