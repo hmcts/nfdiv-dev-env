@@ -460,7 +460,7 @@ services:
       - ccd-data-store-api
 
   pcq-backend:
-    image: hmctspublic.azurecr.io/pcq/backend
+    image: hmctspublic.azurecr.io/pcq/backend:latest
     environment:
       # database configuration
       - SPRING_DATASOURCE_URL=jdbc:postgresql://pcq-database:5432/${PCQ_DB_NAME}
@@ -489,7 +489,7 @@ services:
       - pcq-database-data:/var/lib/postgresql/data
 
   pcq-frontend:
-    image: hmctspublic.azurecr.io/pcq/frontend
+    image: hmctspublic.azurecr.io/pcq/frontend:latest
     environment:
       - LAUNCHDARKLY_KEY=sdk-e97f48f2-0492-43fe-b881-12695a051846
       - PCQ_BACKEND_ENABLED=true
