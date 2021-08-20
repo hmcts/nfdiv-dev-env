@@ -320,6 +320,7 @@ services:
       PRD_API_BASEURL: http://mock-rd-professional-api:8080
       IDAM_SYSTEM_UPDATE_USERNAME: "${IDAM_SYSTEM_UPDATE_USERNAME}"
       IDAM_SYSTEM_UPDATE_PASSWORD: "${IDAM_SYSTEM_UPDATE_PASSWORD}"
+      PAYMENT_API_BASEURL: http://mock-rd-professional-api:8080
     ports:
       - 4013:4013
 
