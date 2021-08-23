@@ -24,7 +24,6 @@
       "email": "civil.damages.claims+organisation.2.superuser@gmail.com"
     },
     "paymentAccount": [
-      "PBA0077597",
       "PBA0078094"
     ]
   },
@@ -51,7 +50,8 @@
       "email": "civil.damages.claims+organisation.1.superuser@gmail.com"
     },
     "paymentAccount": [
-      "PBA1234999"
+      "PBA1234999",
+      "PBA0077597"
     ]
   }
 ]
