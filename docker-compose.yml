@@ -7,7 +7,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,div_scheduler,payment,evidence
+      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,payment,evidence
       DB_USERNAME:
       DB_PASSWORD:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -67,6 +67,7 @@ services:
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY:
       DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api,ccd_case_document_am_api
+      CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: nfdiv_case_api
       CCD_DM_DOMAIN: http://dm-store:8080
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
@@ -327,7 +328,6 @@ services:
   doc-assembly-api:
     image: hmctspublic.azurecr.io/dg/docassembly
     environment:
-      - no_proxy=idam-api,$no_proxy
       - S2S_KEY=${DOC_ASSEMBLY_S2S_SECRET}
       - IDAM_API_BASE_URI=http://idam-api:5000
       - S2S_BASE_URI=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -450,55 +450,12 @@ services:
       - APPINSIGHTS_INSTRUMENTATIONKEY=DUMMY
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - PAYMENT_S2S_SECRET=${PAYMENT_S2S_SECRET}
-      - http_proxy
-      - https_proxy
-      - no_proxy
     ports:
       - 4401:8080
     depends_on:
       - shared-database
       - idam-api
       - ccd-data-store-api
-
-  pcq-backend:
-    image: hmctspublic.azurecr.io/pcq/backend:latest
-    environment:
-      # database configuration
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://pcq-database:5432/${PCQ_DB_NAME}
-      - SPRING_DATASOURCE_USERNAME=${PCQ_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${PCQ_DB_PASSWORD}
-      # JWT configuration
-      - JWT_SECRET=${JWT_SECRET}
-      # PGP Encryption configuration
-      - DB_ENCRYPTION_KEY=${DB_ENCRYPTION_KEY}
-      - S2S_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    ports:
-      - 4550:4550
-    depends_on:
-      - pcq-database
-
-  pcq-database:
-    container_name: pcq-database
-    image: postgres:11-alpine
-    environment:
-      POSTGRES_USER: ${PCQ_DB_USERNAME}
-      POSTGRES_PASSWORD: ${PCQ_DB_PASSWORD}
-      POSTGRES_DB: ${PCQ_DB_NAME}
-    ports:
-      - 5052:5432
-    volumes:
-      - pcq-database-data:/var/lib/postgresql/data
-
-  pcq-frontend:
-    image: hmctspublic.azurecr.io/pcq/frontend:latest
-    environment:
-      - LAUNCHDARKLY_KEY=sdk-e97f48f2-0492-43fe-b881-12695a051846
-      - PCQ_BACKEND_ENABLED=true
-      - PCQ_BACKEND_URL=http://pcq-backend:4550
-    ports:
-      - 4000:4000
-    depends_on:
-      - pcq-backend
 
   smtp-server:
     image: mailhog/mailhog
@@ -514,7 +471,6 @@ services:
 
 volumes:
   ccd-docker-azure-blob-data:
-  pcq-database-data:
   esdata1:
     driver: local
 

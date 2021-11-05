@@ -4,4 +4,6 @@ nfdiv-case-maintenance-service/
 nfdiv-case-orchestration-service/
 nfdiv-case-api/
 nfdiv-frontend/
+nfdiv-cron/
+nfdiv-ccd-e2e-tests/
 .env
