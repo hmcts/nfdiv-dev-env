@@ -7,7 +7,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,payment,evidence
+      POSTGRES_MULTIPLE_DATABASES: ccd,ccd_user_profile,ccd_definition,ccd_data,ccd_definition_designer,payment,evidence,role_assignment
       DB_USERNAME:
       DB_PASSWORD:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -66,7 +66,7 @@ services:
       DATA_STORE_DB_PASSWORD: "${DB_PASSWORD}"
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY:
-      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api,ccd_case_document_am_api
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,divorce_frontend,payment-api,xui_webapp,nfdiv_case_api,ccd_case_document_am_api,am_role_assignment_service
       CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: nfdiv_case_api
       CCD_DM_DOMAIN: http://dm-store:8080
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
@@ -85,6 +85,7 @@ services:
       IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET}"
       IDAM_CLIENT_ID: ccd_data_store_api
       CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
+      ROLE_ASSIGNMENT_URL: http://am-role-assignment-service:4096
     ports:
       - 4452:4452
       - 5005:5005
@@ -364,7 +365,6 @@ services:
       IDAM_S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       S2S_NAMES_WHITELIST: sscs,divorce,ccd,em_gw,document-management-store,ccd_gw,idam-api,fpl_case_service,xui_webapp,ccd_case_document_am_api,nfdiv_case_api,dg_docassembly_api,ccd_case_document_am_api
       ENABLE_DB_MIGRATE: "true"
-
     depends_on:
       - shared-database
       - azure-storage-emulator-azurite
@@ -456,6 +456,43 @@ services:
       - shared-database
       - idam-api
       - ccd-data-store-api
+
+  am-role-assignment-service:
+    image: "${AM_ROLE_ASSIGNMENT_SERVICE_USE_LOCAL-hmctspublic.azurecr.io/}am/role-assignment-service:${AM_ROLE_ASSIGNMENT_SERVICE_TAG:-latest}"
+    environment:
+      ROLE_ASSIGNMENT_DB_HOST: shared-database
+      ROLE_ASSIGNMENT_DB_PORT: 5432
+      ROLE_ASSIGNMENT_DB_USERNAME: "${DB_USERNAME}"
+      ROLE_ASSIGNMENT_DB_PASSWORD: "${DB_PASSWORD}"
+      ROLE_ASSIGNMENT_DB_OPTIONS:
+      AM_ROLE_ASSIGNMENT_SERVICE_SECRET: "${IDAM_KEY_AM_ROLE_ASSIGNMENT}" #TODO: Add to .env with env var
+      LD_SDK_KEY:
+      ROLE_ASSIGNMENT_IDAM_KEY:
+      ROLE_ASSIGNMENT_TOKEN_SECRET:
+      ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,xui_webapp,ccd_data
+      IDAM_USER_URL: http://idam-api:5000
+      IDAM_S2S_URL: http://service-auth-provider-api:8080
+      OPEN_ID_API_BASE_URI: http://idam-api:5000}/o
+      OIDC_ISSUER_URL: http://idam-api:5000}/openam/oauth2/hmcts
+      ROLE_ASSIGNMENT_IDAM_CLIENT_ID: am_role_assignment
+      ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET: am_role_assignment_secret
+      ROLE_ASSIGNMENT_IDAM_ADMIN_USERID: "${CCD_SYSTEM_UPDATE_USERNAME}"
+      ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD: "${CCD_SYSTEM_UPDATE_PASSWORD}"
+      ROLE_ASSIGNMENT_IDAM_ADMIN_SCOPE: profile openid roles search-user
+      CCD_DATA_STORE_URL: http://ccd-data-store-api:4452
+      AZURE_APPLICATIONINSIGHTS_INSTRUMENTATIONKEY:
+      REFORM_SERVICE_NAME: am-role-assignment-service
+      REFORM_TEAM: am
+      REFORM_ENVIRONMENT: local
+    ports:
+      - 4096:4096
+    depends_on:
+      idam-api:
+        condition: service_started
+      shared-database:
+        condition: service_started
+      ccd-data-store-api:
+        condition: service_started
 
   smtp-server:
     image: mailhog/mailhog
