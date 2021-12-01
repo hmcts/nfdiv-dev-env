@@ -465,15 +465,15 @@ services:
       ROLE_ASSIGNMENT_DB_USERNAME: "${DB_USERNAME}"
       ROLE_ASSIGNMENT_DB_PASSWORD: "${DB_PASSWORD}"
       ROLE_ASSIGNMENT_DB_OPTIONS:
-      AM_ROLE_ASSIGNMENT_SERVICE_SECRET: "${IDAM_KEY_AM_ROLE_ASSIGNMENT}" #TODO: Add to .env with env var
+      AM_ROLE_ASSIGNMENT_SERVICE_SECRET: "${IDAM_KEY_AM_ROLE_ASSIGNMENT}"
       LD_SDK_KEY:
       ROLE_ASSIGNMENT_IDAM_KEY:
       ROLE_ASSIGNMENT_TOKEN_SECRET:
       ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,xui_webapp,ccd_data
       IDAM_USER_URL: http://idam-api:5000
       IDAM_S2S_URL: http://service-auth-provider-api:8080
-      OPEN_ID_API_BASE_URI: http://idam-api:5000}/o
-      OIDC_ISSUER_URL: http://idam-api:5000}/openam/oauth2/hmcts
+      OPEN_ID_API_BASE_URI: http://idam-api:5000/o
+      OIDC_ISSUER_URL: http://idam-api:5000/openam/oauth2/hmcts
       ROLE_ASSIGNMENT_IDAM_CLIENT_ID: am_role_assignment
       ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET: am_role_assignment_secret
       ROLE_ASSIGNMENT_IDAM_ADMIN_USERID: "${CCD_SYSTEM_UPDATE_USERNAME}"
@@ -488,11 +488,11 @@ services:
       - 4096:4096
     depends_on:
       idam-api:
-        condition: service_started
+        condition: service_completed_successfully
       shared-database:
-        condition: service_started
+        condition: service_completed_successfully
       ccd-data-store-api:
-        condition: service_started
+        condition: service_completed_successfully
 
   smtp-server:
     image: mailhog/mailhog
