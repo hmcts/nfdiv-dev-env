@@ -3,23 +3,33 @@
     "email": "TEST_SYSTEM_USER@mailinator.com",
     "roleAssignments": [
       {
-        "roleType": "ORGANISATION",
-        "roleName": "staff",
-        "grantType": "STANDARD",
-        "roleCategory": "LEGAL_OPERATIONS",
-        "classification": "PUBLIC",
+        "roleType": "CASE",
+        "roleName": "[APPONESOLICITOR]",
+        "grantType": "SPECIFIC, CHALLENGED",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "AAT", "jurisdiction": "AUTOTEST1" },
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
         "authorisations": []
       },
       {
-        "roleType": "ORGANISATION",
-        "roleName": "staff",
-        "grantType": "STANDARD",
-        "roleCategory": "LEGAL_OPERATIONS",
-        "classification": "PUBLIC",
+        "roleType": "CASE",
+        "roleName": "[APPTWOSOLICITOR]",
+        "grantType": "SPECIFIC, CHALLENGED",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "MAPPER", "jurisdiction": "AUTOTEST1" },
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPLICANTTWO]",
+        "grantType": "SPECIFIC, CHALLENGED",
+        "roleCategory": "CITIZEN",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
         "authorisations": []
       }
     ],
