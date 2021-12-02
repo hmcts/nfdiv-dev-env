@@ -5,7 +5,17 @@
       {
         "roleType": "CASE",
         "roleName": "[APPONESOLICITOR]",
-        "grantType": "SPECIFIC, CHALLENGED",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPONESOLICITOR]",
+        "grantType": "CHALLENGED",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
@@ -15,7 +25,17 @@
       {
         "roleType": "CASE",
         "roleName": "[APPTWOSOLICITOR]",
-        "grantType": "SPECIFIC, CHALLENGED",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPTWOSOLICITOR]",
+        "grantType": "CHALLENGED",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
@@ -25,7 +45,17 @@
       {
         "roleType": "CASE",
         "roleName": "[APPLICANTTWO]",
-        "grantType": "SPECIFIC, CHALLENGED",
+        "grantType": "SPECIFIC",
+        "roleCategory": "CITIZEN",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "NFD", "jurisdiction": "DIVORCE" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPLICANTTWO]",
+        "grantType": "CHALLENGED",
         "roleCategory": "CITIZEN",
         "classification": "RESTRICTED",
         "readOnly": false,
