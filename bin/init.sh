@@ -39,8 +39,9 @@ cd $API_DIR
 
 ./bin/add-roles.sh
 ./bin/add-ccd-user-profiles.sh
-./bin/add-role-assignments.sh
 ./bin/process-and-import-ccd-definition.sh
 cd ../$FE_DIR && (yarn > /dev/null 2>&1)
 cd ../
+./bin/add-role-assignments.sh
+
 
