@@ -489,9 +489,9 @@ services:
     ports:
       - 4096:4096
     depends_on:
-      idam-api
-      shared-database
-      ccd-data-store-api
+      - idam-api
+      - shared-database
+      - ccd-data-store-api
 
   smtp-server:
     image: mailhog/mailhog
