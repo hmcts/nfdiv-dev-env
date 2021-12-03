@@ -15,6 +15,10 @@ CCD_REDIRECTS=("http://ccd-data-store-api/oauth2redirect")
 CCD_REDIRECTS_STR=$(printf "\"%s\"," "${CCD_REDIRECTS[@]}")
 CCD_REDIRECT_URI="[${CCD_REDIRECTS_STR%?}]"
 
+AM_REDIRECTS=("http://am-role-assignment-service:4096/oauth2redirect")
+AM_REDIRECTS_STR=$(printf "\"%s\"," "${AM_REDIRECTS[@]}")
+AM_REDIRECT_URI="[${AM_REDIRECTS_STR%?}]"
+
 DIV_CLIENT_ID="divorce"
 XUI_CLIENT_ID="xuiwebapp"
 
@@ -45,6 +49,10 @@ curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
 echo "Setup ccd data store client"
 curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
  -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "ccd_data_store_api", "label": "ccd_data_store_api", "oauth2ClientId": "ccd_data_store_api", "oauth2ClientSecret": "'${OAUTH2_CLIENT_SECRET}'", "oauth2RedirectUris": '${CCD_REDIRECT_URI}', "oauth2Scope": "profile openid roles manage-user", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
+
+echo "Setup access management client"
+curl -s -o /dev/null -XPOST "${HEADERS[@]}" ${IDAM_URI}/services \
+ -d '{ "activationRedirectUrl": "", "allowedRoles": '"${ROLES}"', "description": "am_role_assignment", "label": "am_role_assignment", "oauth2ClientId": "am_role_assignment", "oauth2ClientSecret": "am_role_assignment_secret", "oauth2RedirectUris": '${AM_REDIRECT_URI}', "oauth2Scope": "profile openid roles search-user", "onboardingEndpoint": "string", "onboardingRoles": '"${ROLES}"', "selfRegistrationAllowed": true}'
 
 echo "Setup divorce roles"
 # Create roles in idam
